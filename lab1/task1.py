@@ -1,6 +1,7 @@
 import math
 import random
 import hashlib
+from Crypto.Util.number import getPrime
 
 
 def power(x, y, mod) :
@@ -44,12 +45,21 @@ def miller_rabin(n, k):
 
 
 def generate_prime(length):
+    if length > 32:
+        return getPrime(length)
+    
+    p = 1 << (length - 1)
+    for _ in range(length - 1):
+        random_bit = random.randint(0, 1)
+        p = (p << 1) | random_bit
+
     while True:
-        p = random.randrange(10 ** (length - 1), 10 ** length)
         if p % 2 == 0:
             p += 1
         if miller_rabin(p, 20):
             return p
+        else:
+            p += 1
 
 
 def generate_keys():

@@ -35,7 +35,7 @@ def gcd(a,b):
 
 
 def find_g_value(p, q):
-    nums = [q, (p - 1) // q]
+    nums = [q, 2]
     for g in range(2, p):
         fl = True
         for el in nums:
@@ -105,33 +105,66 @@ def generate_public_key():
         file.write(str((g, p)))
 
 
-def generate_private_keys():
+def generate_private_keys(n):
     with open('public_key.txt', 'r') as file:
         pk = file.read()
     g, p = eval(pk)
     
-    print("Введите длину степени a:")
-    a_len = int(input())
-    a_power = generate_number(a_len)
+    a_power = random.randint(1, p)
+    b_power = random.randint(1, p)
 
-    print("Введите длину степени b:")
-    b_len = int(input())
-    b_power = generate_number(b_len)
+    if n == 2:
+        with open('alice_private_key.txt', 'w') as file:
+            file.write(str(a_power))
 
-    a = pow(g, a_power, p)
-    b = pow(g, b_power, p)
+    if n == 3:
+        with open('bob_private_key.txt', 'w') as file:
+            file.write(str(b_power))
 
-    with open('alice_remainder.txt', 'w') as file:
-        file.write(str(a))
+    if n == 4:
+        with open('alice_private_key.txt', 'r') as file:
+            apk = file.read()
+        a_power = eval(apk)
+        a = pow(g, a_power, p)
+        with open('alice_remainder.txt', 'w') as file:
+            file.write(str(a))
 
-    with open('alice_private_key.txt', 'w') as file:
-        file.write(str(a_power))
-
-    with open('bob_remainder.txt', 'w') as file:
-        file.write(str(b))
+    if n == 5:
+        with open('bob_private_key.txt', 'r') as file:
+            apk = file.read()
+        b_power = eval(apk)
+        b = pow(g, b_power, p)
+        with open('bob_remainder.txt', 'w') as file:
+            file.write(str(b))
     
-    with open('bob_private_key.txt', 'w') as file:
-        file.write(str(b_power))
+
+
+def calculate_k():
+    with open('public_key.txt', 'r') as file:
+        pk = file.read()
+    g, p = eval(pk)
+
+    with open('alice_private_key.txt', 'r') as file:
+        apk = file.read()
+    a = eval(apk)
+
+    with open('bob_private_key.txt', 'r') as file:
+        bpk = file.read()
+    b = eval(bpk)
+
+    with open('alice_power.txt', 'r') as file:
+        ap = file.read()
+    a_power = eval(ap)
+
+    with open('bob_power.txt', 'r') as file:
+        bp = file.read()
+    b_power = eval(bp)
+
+    alice_K = pow(b, a_power, p)
+    bob_K = pow(a, b_power, p)
+
+    if alice_K == bob_K:
+        print("Вычисленные значения совпадают!")
 
 
 def calculate_k_alice():
@@ -173,18 +206,21 @@ def calculate_k_bob():
 def main():
     print("Выберите действие:")
     print("1 - Сгенерировать g и p (публичный ключ).")
-    print("2 - Сгенерировать a и b (приватные ключи).")
-    print("3 - Вычислить K для Алисы.")
-    print("4 - Вычислить K для Боба.")
+    print("2 - Сгенерировать a.")
+    print("3 - Сгенерировать b.")
+    print("4 - Сгенерировать A = g^a mod p.")
+    print("5 - Сгенерировать B = g^b mod p.")
+    print("6 - Вычислить K для Алисы.")
+    print("7 - Вычислить K для Боба.")
 
     n = int(input())
     if n == 1:
         generate_public_key()
-    elif n == 2:
-        generate_private_keys()
-    elif n == 3:
+    elif n in [2, 3, 4, 5]:
+        generate_private_keys(n)
+    elif n == 6:
         calculate_k_alice()
-    elif n == 4:
+    elif n == 7:
         calculate_k_bob()
 
 

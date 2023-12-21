@@ -153,6 +153,7 @@ def distribute():
     print("Введите число карт, которое хотите раздать/досдать:")
     card_amount = int(input())
     cardfiles = [f for f in os.listdir(cur_dir) if isfile(join(cur_dir, f))]
+    random.shuffle(cardfiles)
     if len(cardfiles) < card_amount:
         print("Карт в колоде меньше, чем введенное значение!")
         return None
@@ -299,7 +300,7 @@ if __name__ == "__main__":
     print("4 - Расдача/досдача карт игрокам")
     print("5 - Расшифровать диллером для игрока")
     print("6 - Расшифровать игроком")
-    print("7 - Расшифровать диллеру (все оставшиеся карты)")
+    print("7 - Расшифровать диллером все оставшиеся карты")
     move = int(input())
     if move == 1:
         generate_player_n_keys()
